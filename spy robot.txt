@@ -1,0 +1,179 @@
+#include <SoftwareSerial.h>
+SoftwareSerial bluetooth(12, 13);
+#define m11 6
+#define m12 7
+#define m21 8
+#define m22 9
+#define buzzer 10
+#define fire 2
+#define ir 3
+#define rel 4
+#define metal 5
+#define lazer 11
+char blu;
+void setup()
+{
+  Serial.begin(9600);
+  bluetooth.begin(9600);
+  Serial.println("bluethooth based pic and place robot");
+  pinMode (m11, OUTPUT);
+  pinMode (m12, OUTPUT);
+  pinMode (m21, OUTPUT);
+  pinMode (m22, OUTPUT);
+   pinMode (buzzer, OUTPUT);
+  pinMode (fire, INPUT);
+  pinMode (ir, INPUT);
+  pinMode (rel, OUTPUT);
+  pinMode (metal, INPUT);
+   pinMode (lazer, OUTPUT);
+}
+void loop()
+{
+  int FIRE=digitalRead(fire);
+  int IR=digitalRead(ir);
+  int METAL=digitalRead(metal);
+  Serial.print("FIRE=");
+  Serial.println(FIRE);
+  Serial.print("IR=");
+  Serial.println(ir);
+  Serial.print("METAL=");
+  Serial.println(METAL);
+delay(500);
+ while(bluetooth.available())
+  {
+    blu = bluetooth.read();
+    Serial.println("BLUETOOTH MSG");
+    Serial.println(blu);
+    break;
+  }
+if ((blu == 'f') || (blu == 'F'))
+  {
+    Serial.println("robot moving forward");
+    bluetooth.println("robot moving forward");
+    forward();
+  }
+  else if ((blu == 'b') || (blu == 'B'))
+  {
+    Serial.println("robot moving backward");
+    bluetooth.println("robot moving backward");
+    backward();
+  }
+  else if ((blu == 'l') || (blu == 'L'))
+  {
+    Serial.println("robot moving left");
+     bluetooth.println("robot moving left");
+    left();
+  }
+  else if ((blu == 'r') || (blu == 'R'))
+  {
+    Serial.println("robot moving right");
+     bluetooth.println("robot moving right");
+    right();
+  }
+  else if ((blu == 's') || (blu == 'S'))
+  {
+    Serial.println("robot moving stop");
+    bluetooth.println("robot moving stop");
+    stopp();
+  }
+ 
+else if(FIRE==1)
+ {
+   digitalWrite(rel,HIGH);
+  beep();
+  Serial.println("FIRE DETECTED WATER PUMP ON");
+  bluetooth.println("FIRE DETECTED WATER PUMP ON");
+ }
+ else if(IR==1)
+ {
+  digitalWrite(lazer,HIGH);
+   beep();
+  Serial.println("OBSTRACLE DETECTED LASER ON");
+   bluetooth.println("OBSTRACLE DETECTED LASER ON");
+ }
+ else if(METAL==1)
+ {
+  stopp();
+  beep();
+  Serial.println("METAL DETECTED ROBOT STOP");
+   bluetooth.println("METAL DETECTED ROBOT STOP");
+ }
+ else
+ {
+  Serial.println("NORMAL............");
+  bluetooth.println("NORMAL............");
+  digitalWrite(lazer,LOW);
+  digitalWrite(rel,LOW);
+ }
+}
+ 
+void forward ()
+{
+  Serial.println("FORWARD ");
+  digitalWrite(m11, HIGH);
+  digitalWrite(m12, LOW);
+
+  digitalWrite(m21, HIGH);
+  digitalWrite(m22, LOW);
+
+  delay(500);
+}
+void backward ()
+{
+  Serial.println("BACKWARD ");
+  digitalWrite(m11, LOW);
+  digitalWrite(m12, HIGH);
+
+  digitalWrite(m21, LOW);
+  digitalWrite(m22, HIGH);
+
+  delay(500);
+}
+void right ()
+{
+  Serial.println("RIGHT");
+  digitalWrite(m11, HIGH);
+  digitalWrite(m12, LOW);
+
+  digitalWrite(m21, LOW);
+  digitalWrite(m22, HIGH);
+
+  delay(500);
+}
+void left ()
+{
+  Serial.println("LEFT");
+  digitalWrite(m11, LOW);
+  digitalWrite(m12, HIGH);
+
+  digitalWrite(m21, HIGH);
+  digitalWrite(m22, LOW);
+
+  delay(500);
+}
+void stopp ()
+{
+  Serial.println("STOP");
+  digitalWrite(m11, LOW);
+  digitalWrite(m12, LOW);
+
+  digitalWrite(m21, LOW);
+  digitalWrite(m22, LOW);
+
+  delay(500);
+}
+void beep()
+{
+  digitalWrite(buzzer,HIGH);
+  delay(300);
+  digitalWrite(buzzer,LOW);
+  delay(10);
+  digitalWrite(buzzer,HIGH);
+  delay(300);
+  digitalWrite(buzzer,LOW);
+  delay(10);
+  digitalWrite(buzzer,HIGH);
+  delay(300);
+  digitalWrite(buzzer,LOW);
+  delay(10);
+}
